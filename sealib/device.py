@@ -25,7 +25,7 @@ from sealib.policy import Context
 
 class Device(object):
     """Class providing an abstraction for a connected Android device."""
-    DEFAULT_POLICY_FILE = "/sys/fs/selinux/policy"
+    DEFAULT_POLICY_FILE = "/etc/selinux/precompiled_sepolicy"
     DEFAULT_ADB = "adb"
 
     @staticmethod
@@ -38,7 +38,7 @@ class Device(object):
         # Split by newline and remove first line ("List of devices attached")
         # TODO: surround with try/except?
         devices = subprocess.check_output(
-            [adb, "devices", "-l"]).split('\n')[1:]
+            [adb, "devices", "-l"]).decode().split('\n')[1:]
         tmp = {}
         for dev in devices:
             if dev:
@@ -52,7 +52,7 @@ class Device(object):
         # Initially assume we are not root
         root_adb = "not_root"
         # Try running adb as root
-        root_status = subprocess.check_output(cmd + ["root"]).strip('\r\n')
+        root_status = subprocess.check_output(cmd + ["root"]).decode().strip('\r\n')
         if (root_status == "adbd is already running as root" or
                 root_status == "restarting adbd as root"):
             # We have root
@@ -160,7 +160,7 @@ class Device(object):
             # Get the Android version from the connected device
             cmd = ["getprop", "ro.build.version.release"]
             # TODO: surround with try/except?
-            tmp = subprocess.check_output(self.shell + cmd)
+            tmp = subprocess.check_output(self.shell + cmd).decode()
             self._android_version = tmp.strip('\r\n')
         return self._android_version
 
@@ -184,7 +184,7 @@ class Device(object):
         cmd = ["ps", "-Z"]
         # Split by newlines and remove first line ("LABEL USER PID PPID NAME")
         # TODO: surround with try/except?
-        psz = subprocess.check_output(self.shell + cmd).split('\n')[1:]
+        psz = subprocess.check_output(self.shell + cmd).decode().split('\n')[1:]
         for line in psz:
             line = line.strip("\r")
             if line:
@@ -289,7 +289,7 @@ class Device(object):
         Returns a dictionary (filename, File)."""
         path = os.path.normpath(path)
         cmd = ["ls", "-ldZ", "'" + path + "'"]
-        listing = subprocess.check_output(self.shell + cmd).split('\n')
+        listing = subprocess.check_output(self.shell + cmd).decode().split('\n')
         line = listing[0].strip("\r")
         # Parse ls -ldZ output for a directory
         try:
@@ -337,7 +337,7 @@ class File(object):
         # TODO: change the parsing to matching groups in the regexes and
         # extract parameters that way.
         # If this is an old-style file line (Android<=6.0)
-        if a_v == "6.0" or (a_v[0].isdigit() and (int(a_v[0])) < 6):
+        if a_v == "6.0" or (a_v[0].isdigit() and (int(a_v)) < 6):
             if not File.correct_line_6_0.match(l):
                 raise ValueError('Bad file "{}"'.format(l))
             line = l.split(None, 4)
