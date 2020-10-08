@@ -42,7 +42,7 @@ def device_picker(devices):
         while True:
             # Print dialog and list of devices
             print("Choose a device:")
-            for i, name in devs.iteritems():
+            for i, name in devs.items():
                 print("[{}]\t{}".format(i, name))
             # Get the input
             choice = input("> ")
@@ -230,7 +230,7 @@ def get_process_permissions(policy, process, files_dict):
     Returns a dictionary (filename, set(perms))."""
     file_permissions = {}
     accessible_types = policy.get_types_accessible_by(process.context)
-    for fname, f in files_dict.iteritems():
+    for fname, f in files_dict.items():
         # TODO: expand matching to full context?
         if f.context.type in accessible_types:
             # We have some rule to this target type
@@ -270,7 +270,7 @@ def print_files(args, process, files_dict, file_permissions):
         with open(output, "w") as thefile:
             if process and file_permissions:
                 # Print only the files a process has permissions to
-                for fname, f in files_dict.iteritems():
+                for fname, f in files_dict.items():
                     if fname in file_permissions:
                         out_line = fname
                         # -Z or --context option
@@ -284,7 +284,7 @@ def print_files(args, process, files_dict, file_permissions):
                         print>>thefile, out_line
             else:
                 # Print all files
-                for fname, f in files_dict.iteritems():
+                for fname, f in files_dict.items():
                     out_line = fname
                     # -Z or --context option
                     if args.context:
@@ -294,7 +294,7 @@ def print_files(args, process, files_dict, file_permissions):
     else:
         if process and file_permissions:
             # Print only the files a process has permissions to
-            for fname, f in files_dict.iteritems():
+            for fname, f in files_dict.items():
                 if fname in file_permissions:
                     out_line = fname
                     # -Z or --context option
@@ -308,7 +308,7 @@ def print_files(args, process, files_dict, file_permissions):
                     print(out_line)
         else:
             # Print all files
-            for fname, f in files_dict.iteritems():
+            for fname, f in files_dict.items():
                 out_line = fname
                 # -Z or --context option
                 if args.context:
@@ -400,10 +400,10 @@ def get_file_permissions(policy, files_dict, processes_dict):
     # permissions associated to each pair of values of the indexes
     outmap = {}
     # Process all files
-    for fname, f in files_dict.iteritems():
+    for fname, f in files_dict.items():
         if fname not in outmap:
             outmap[fname] = {}
-        for pname, p in processes_dict.iteritems():
+        for pname, p in processes_dict.items():
             if p.context.type in hugemap[f.context.type][f.security_class]:
                 # We have some rule from this type to the current file
                 if pname not in outmap[fname]:
@@ -452,7 +452,7 @@ def print_processes(args, files_dict, processes_dict, proc_permissions):
                 tmp = "There are {} processes running on the device."
                 print>>thefile, tmp.format(len(processes_dict))
                 # For each file some process has permissions to
-                for fname, procperm_dict in proc_permissions.iteritems():
+                for fname, procperm_dict in proc_permissions.items():
                     # Get the corresponding FileOnDevice object
                     f = files_dict[fname]
                     tmp = "The {} \"{}\" in the context \"{}\" can be " \
@@ -460,7 +460,7 @@ def print_processes(args, files_dict, processes_dict, proc_permissions):
                     print>>thefile, tmp.format(f.security_class, fname,
                                                f.context, len(procperm_dict))
                     # For each process that has permissions over the cur file
-                    for pid, perms in procperm_dict.iteritems():
+                    for pid, perms in procperm_dict.items():
                         # Get the corresponding ProcessOnDevice object
                         p = processes_dict[pid]
                         # Setup output line
@@ -477,7 +477,7 @@ def print_processes(args, files_dict, processes_dict, proc_permissions):
                 tmp = "There are {} processes running on the device:"
                 print>>thefile, tmp.format(len(processes_dict))
                 # For each process
-                for pid, p in processes_dict.iteritems():
+                for pid, p in processes_dict.items():
                     # Setup output line
                     out_line = "\t{}\t{}".format(pid, p.name)
                     # -Z or --context option
@@ -490,7 +490,7 @@ def print_processes(args, files_dict, processes_dict, proc_permissions):
             tmp = "There are {} processes running on the device."
             print(tmp.format(len(processes_dict)))
             # For each file some process has permissions to
-            for fname, procperm_dict in proc_permissions.iteritems():
+            for fname, procperm_dict in proc_permissions.items():
                 # Get the corresponding FileOnDevice object
                 f = files_dict[fname]
                 tmp = "The {} \"{}\" in the context \"{}\" can be " \
@@ -498,7 +498,7 @@ def print_processes(args, files_dict, processes_dict, proc_permissions):
                 print(tmp.format(f.security_class, fname,
                                  f.context, len(procperm_dict)))
                 # For each process that has permissions over the cur file
-                for pid, perms in procperm_dict.iteritems():
+                for pid, perms in procperm_dict.items():
                     # Get the corresponding ProcessOnDevice object
                     p = processes_dict[pid]
                     # Setup output line

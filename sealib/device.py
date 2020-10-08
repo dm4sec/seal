@@ -25,7 +25,7 @@ from sealib.policy import Context
 
 class Device(object):
     """Class providing an abstraction for a connected Android device."""
-    DEFAULT_POLICY_FILE = "/etc/selinux/precompiled_sepolicy"
+    DEFAULT_POLICY_FILE = "/vendor/etc/selinux/precompiled_sepolicy"
     DEFAULT_ADB = "adb"
 
     @staticmethod
@@ -60,11 +60,11 @@ class Device(object):
         else:
             # Check wether 'su' exists
             root_status = subprocess.check_output(
-                cmd + ["shell", "command", "-v", "su"]).strip('\r\n')
+                cmd + ["shell", "command", "-v", "su"]).decode().strip('\r\n')
             # If su exists, check if we can be root
             if root_status:
                 root_status = subprocess.check_output(
-                    cmd + ["shell", "su", "-c", "id"]).strip('\r\n')
+                    cmd + ["shell", "su", "-c", "id"]).decode().strip('\r\n')
                 if "uid=0(root) gid=0(root)" in root_status:
                     # We have a root shell
                     root_adb = "root_shell"
@@ -171,7 +171,7 @@ class Device(object):
             # Get the SELinux mode from the connected device
             cmd = ["getenforce"]
             # TODO: surround with try/except?
-            tmp = subprocess.check_output(self.shell + cmd)
+            tmp = subprocess.check_output(self.shell + cmd).decode()
             self._selinux_mode = tmp.strip('\r\n').lower()
         return self._selinux_mode
 
@@ -215,7 +215,7 @@ class Device(object):
         # all the entries, therefore on error convert output to a list as if
         # nothing happened.
         try:
-            listing = subprocess.check_output(self.shell + cmd).split('\n')
+            listing = subprocess.check_output(self.shell + cmd).decode().split('\n')
         except subprocess.CalledProcessError as e:
             listing = e.output.split('\n')
 
@@ -267,7 +267,7 @@ class Device(object):
         Returns a dictionary (filename, File)."""
         path = os.path.normpath(path)
         cmd = ["ls", "-lZ", "'" + path + "'"]
-        listing = subprocess.check_output(self.shell + cmd).split('\n')
+        listing = subprocess.check_output(self.shell + cmd).decode().split('\n')
         line = listing[0].strip("\r")
         # Parse ls -lZ output for a single file
         try:
